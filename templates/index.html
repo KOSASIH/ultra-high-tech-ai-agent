@@ -1,0 +1,1247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ultra High-Tech Autonomous AI Agent</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .main-container {
+            display: flex;
+            flex-grow: 1;
+            overflow: hidden;
+        }
+        .chat-container {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            width: 100%;
+            overflow: hidden;
+        }
+        .sidebar {
+            width: 350px;
+            background-color: #fff;
+            border-left: 1px solid #dee2e6;
+            padding: 20px;
+            overflow-y: auto;
+            display: none;
+        }
+        .chat-header {
+            background: linear-gradient(135deg, #6e8efb, #a777e3);
+            color: white;
+            padding: 20px;
+            border-radius: 10px 10px 0 0;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .chat-messages {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            max-height: calc(100vh - 350px);
+        }
+        .message {
+            margin-bottom: 15px;
+            padding: 10px 15px;
+            border-radius: 18px;
+            max-width: 80%;
+            position: relative;
+        }
+        .user-message {
+            background-color: #e9ecef;
+            margin-left: auto;
+            border-bottom-right-radius: 5px;
+        }
+        .agent-message {
+            background-color: #d8e8fd;
+            margin-right: auto;
+            border-bottom-left-radius: 5px;
+        }
+        .message-sender {
+            font-weight: bold;
+            margin-bottom: 5px;
+            font-size: 0.9em;
+        }
+        .message-time {
+            font-size: 0.7em;
+            color: #6c757d;
+            position: absolute;
+            bottom: 5px;
+            right: 10px;
+        }
+        .chat-input {
+            display: flex;
+            gap: 10px;
+            margin-top: auto;
+        }
+        .chat-input input {
+            flex-grow: 1;
+            padding: 15px;
+            border: 1px solid #ced4da;
+            border-radius: 25px;
+            font-size: 1em;
+        }
+        .chat-input button {
+            border-radius: 25px;
+            padding: 0 20px;
+        }
+        .system-message {
+            text-align: center;
+            color: #6c757d;
+            margin: 10px 0;
+            font-style: italic;
+        }
+        .typing-indicator {
+            display: none;
+            background-color: #d8e8fd;
+            padding: 10px 15px;
+            border-radius: 18px;
+            margin-right: auto;
+            border-bottom-left-radius: 5px;
+            width: 70px;
+            margin-bottom: 15px;
+        }
+        .typing-indicator span {
+            height: 10px;
+            width: 10px;
+            float: left;
+            margin: 0 1px;
+            background-color: #9E9EA1;
+            display: block;
+            border-radius: 50%;
+            opacity: 0.4;
+        }
+        .typing-indicator span:nth-of-type(1) {
+            animation: 1s blink infinite 0.3333s;
+        }
+        .typing-indicator span:nth-of-type(2) {
+            animation: 1s blink infinite 0.6666s;
+        }
+        .typing-indicator span:nth-of-type(3) {
+            animation: 1s blink infinite 0.9999s;
+        }
+        @keyframes blink {
+            50% {
+                opacity: 1;
+            }
+        }
+        .agent-controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            justify-content: center;
+        }
+        .agent-info {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+        }
+        .agent-info h3 {
+            margin-top: 0;
+            color: #6e8efb;
+        }
+        .agent-status {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+        }
+        .status-item {
+            text-align: center;
+            flex: 1;
+        }
+        .status-value {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #6e8efb;
+        }
+        .status-label {
+            font-size: 0.8em;
+            color: #6c757d;
+        }
+        #userName {
+            max-width: 200px;
+        }
+        .nav-tabs {
+            margin-bottom: 15px;
+        }
+        .tab-content {
+            padding: 15px;
+            background-color: #fff;
+            border: 1px solid #dee2e6;
+            border-top: none;
+            border-radius: 0 0 5px 5px;
+        }
+        .task-item {
+            padding: 10px;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            background-color: #f8f9fa;
+        }
+        .task-item h5 {
+            margin: 0 0 5px 0;
+            font-size: 1rem;
+        }
+        .task-item p {
+            margin: 0;
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+        .task-item .badge {
+            margin-right: 5px;
+        }
+        .knowledge-item {
+            padding: 10px;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            background-color: #f8f9fa;
+        }
+        .knowledge-item h5 {
+            margin: 0 0 5px 0;
+            font-size: 1rem;
+        }
+        .knowledge-item p {
+            margin: 0;
+            font-size: 0.9rem;
+        }
+        .sidebar-toggle {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+        .sidebar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .sidebar-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+        .progress {
+            height: 10px;
+            margin-top: 5px;
+        }
+        .task-actions {
+            margin-top: 10px;
+            display: flex;
+            gap: 5px;
+        }
+        .task-actions button {
+            padding: 2px 8px;
+            font-size: 0.8rem;
+        }
+        .create-form {
+            margin-bottom: 20px;
+        }
+        .search-form {
+            margin-bottom: 20px;
+        }
+        .capabilities-list {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        .capabilities-list li {
+            padding: 5px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .capabilities-list li:last-child {
+            border-bottom: none;
+        }
+        .capabilities-list i {
+            margin-right: 10px;
+            color: #6e8efb;
+        }
+        .agent-avatar {
+            width: 60px;
+            height: 60px;
+            background-color: #6e8efb;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2rem;
+            margin-right: 15px;
+        }
+        .header-content {
+            flex-grow: 1;
+        }
+        .header-actions {
+            display: flex;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <div class="chat-container">
+            <div class="chat-header">
+                <div class="d-flex align-items-center header-content">
+                    <div class="agent-avatar">
+                        <i class="bi bi-robot"></i>
+                    </div>
+                    <div>
+                        <h1>Ultra High-Tech AI</h1>
+                        <p class="mb-0">The most advanced autonomous agent</p>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <div class="input-group me-3">
+                        <span class="input-group-text">Your Name:</span>
+                        <input type="text" class="form-control" id="userName" value="User">
+                    </div>
+                    <button class="sidebar-toggle" id="sidebarToggle">
+                        <i class="bi bi-layout-sidebar-inset"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="chat-messages" id="chatMessages">
+                <div class="system-message">
+                    Welcome to the Ultra High-Tech Autonomous AI Agent. How can I assist you today?
+                </div>
+            </div>
+            
+            <div class="typing-indicator" id="typingIndicator">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            
+            <div class="chat-input">
+                <input type="text" id="userInput" placeholder="Type your message here..." class="form-control">
+                <button class="btn btn-primary" id="sendButton">Send</button>
+            </div>
+            
+            <div class="agent-controls">
+                <button class="btn btn-outline-primary" id="learnButton">Trigger Learning</button>
+                <button class="btn btn-outline-info" id="factButton">Random Fact</button>
+                <button class="btn btn-outline-danger" id="resetButton">Reset Agent</button>
+            </div>
+            
+            <div class="agent-info">
+                <h3>Agent Status</h3>
+                <div class="agent-status">
+                    <div class="status-item">
+                        <div class="status-value" id="messageCount">0</div>
+                        <div class="status-label">Messages</div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-value" id="responseTime">0 ms</div>
+                        <div class="status-label">Avg. Response Time</div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-value" id="learningCycles">0</div>
+                        <div class="status-label">Learning Cycles</div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-value" id="taskCount">0</div>
+                        <div class="status-label">Active Tasks</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h3>Agent Dashboard</h3>
+                <button class="sidebar-close" id="sidebarClose">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            </div>
+            
+            <ul class="nav nav-tabs" id="sidebarTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="tasks-tab" data-bs-toggle="tab" data-bs-target="#tasks" type="button" role="tab" aria-controls="tasks" aria-selected="true">Tasks</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="knowledge-tab" data-bs-toggle="tab" data-bs-target="#knowledge" type="button" role="tab" aria-controls="knowledge" aria-selected="false">Knowledge</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="capabilities-tab" data-bs-toggle="tab" data-bs-target="#capabilities" type="button" role="tab" aria-controls="capabilities" aria-selected="false">Capabilities</button>
+                </li>
+            </ul>
+            
+            <div class="tab-content" id="sidebarTabContent">
+                <div class="tab-pane fade show active" id="tasks" role="tabpanel" aria-labelledby="tasks-tab">
+                    <div class="create-form">
+                        <h5>Create New Task</h5>
+                        <form id="createTaskForm">
+                            <div class="mb-2">
+                                <input type="text" class="form-control" id="taskName" placeholder="Task Name" required>
+                            </div>
+                            <div class="mb-2">
+                                <textarea class="form-control" id="taskDescription" placeholder="Task Description" required></textarea>
+                            </div>
+                            <div class="mb-2">
+                                <select class="form-control" id="taskAction" required>
+                                    <option value="">Select Action</option>
+                                    <option value="learn_information">Learn Information</option>
+                                    <option value="search_knowledge">Search Knowledge</option>
+                                    <option value="analyze_sentiment">Analyze Sentiment</option>
+                                    <option value="send_message">Send Message</option>
+                                    <option value="schedule_reminder">Schedule Reminder</option>
+                                </select>
+                            </div>
+                            <div class="mb-2">
+                                <select class="form-control" id="taskPriority">
+                                    <option value="LOW">Low Priority</option>
+                                    <option value="MEDIUM" selected>Medium Priority</option>
+                                    <option value="HIGH">High Priority</option>
+                                    <option value="CRITICAL">Critical Priority</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-sm">Create Task</button>
+                        </form>
+                    </div>
+                    
+                    <h5>Active Tasks</h5>
+                    <div id="tasksList">
+                        <p class="text-muted">No tasks available</p>
+                    </div>
+                </div>
+                
+                <div class="tab-pane fade" id="knowledge" role="tabpanel" aria-labelledby="knowledge-tab">
+                    <div class="search-form">
+                        <h5>Search Knowledge</h5>
+                        <form id="searchKnowledgeForm">
+                            <div class="input-group mb-2">
+                                <input type="text" class="form-control" id="searchQuery" placeholder="Search Query" required>
+                                <button type="submit" class="btn btn-primary">Search</button>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    <div class="create-form">
+                        <h5>Add Knowledge</h5>
+                        <form id="addKnowledgeForm">
+                            <div class="mb-2">
+                                <textarea class="form-control" id="knowledgeText" placeholder="Enter information to learn" required></textarea>
+                            </div>
+                            <div class="mb-2">
+                                <select class="form-control" id="knowledgeCategory">
+                                    <option value="general" selected>General</option>
+                                    <option value="facts">Facts</option>
+                                    <option value="definitions">Definitions</option>
+                                    <option value="procedures">Procedures</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-sm">Add Knowledge</button>
+                        </form>
+                    </div>
+                    
+                    <h5>Knowledge Results</h5>
+                    <div id="knowledgeResults">
+                        <p class="text-muted">Search or add knowledge to see results</p>
+                    </div>
+                </div>
+                
+                <div class="tab-pane fade" id="capabilities" role="tabpanel" aria-labelledby="capabilities-tab">
+                    <h5>Agent Information</h5>
+                    <div id="agentInfo">
+                        <p>Loading agent information...</p>
+                    </div>
+                    
+                    <h5>Core Capabilities</h5>
+                    <ul class="capabilities-list" id="capabilitiesList">
+                        <li><i class="bi bi-chat-dots"></i> Natural language understanding</li>
+                        <li><i class="bi bi-list-check"></i> Task management</li>
+                        <li><i class="bi bi-database"></i> Knowledge base</li>
+                        <li><i class="bi bi-graph-up"></i> Learning from interactions</li>
+                        <li><i class="bi bi-emoji-smile"></i> Sentiment analysis</li>
+                    </ul>
+                    
+                    <h5>Usage Examples</h5>
+                    <div class="accordion" id="examplesAccordion">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingOne">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+                                    Task Management
+                                </button>
+                            </h2>
+                            <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#examplesAccordion">
+                                <div class="accordion-body">
+                                    <p>Try these commands:</p>
+                                    <ul>
+                                        <li>"Create a task to research AI trends"</li>
+                                        <li>"Check task status"</li>
+                                        <li>"Cancel task [task-id]"</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingTwo">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                    Knowledge Base
+                                </button>
+                            </h2>
+                            <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#examplesAccordion">
+                                <div class="accordion-body">
+                                    <p>Try these commands:</p>
+                                    <ul>
+                                        <li>"Learn that quantum computing uses qubits instead of bits"</li>
+                                        <li>"What is artificial intelligence?"</li>
+                                        <li>"Tell me a random fact"</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingThree">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                                    General Queries
+                                </button>
+                            </h2>
+                            <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#examplesAccordion">
+                                <div class="accordion-body">
+                                    <p>Try these commands:</p>
+                                    <ul>
+                                        <li>"What time is it?"</li>
+                                        <li>"What's the weather like in New York?"</li>
+                                        <li>"Tell me a joke"</li>
+                                        <li>"What can you do?"</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Chat elements
+            const chatMessages = document.getElementById('chatMessages');
+            const userInput = document.getElementById('userInput');
+            const sendButton = document.getElementById('sendButton');
+            const userName = document.getElementById('userName');
+            const typingIndicator = document.getElementById('typingIndicator');
+            const learnButton = document.getElementById('learnButton');
+            const factButton = document.getElementById('factButton');
+            const resetButton = document.getElementById('resetButton');
+            
+            // Sidebar elements
+            const sidebar = document.getElementById('sidebar');
+            const sidebarToggle = document.getElementById('sidebarToggle');
+            const sidebarClose = document.getElementById('sidebarClose');
+            const tasksList = document.getElementById('tasksList');
+            const createTaskForm = document.getElementById('createTaskForm');
+            const searchKnowledgeForm = document.getElementById('searchKnowledgeForm');
+            const addKnowledgeForm = document.getElementById('addKnowledgeForm');
+            const knowledgeResults = document.getElementById('knowledgeResults');
+            const agentInfo = document.getElementById('agentInfo');
+            const capabilitiesList = document.getElementById('capabilitiesList');
+            
+            // Stats elements
+            const messageCount = document.getElementById('messageCount');
+            const responseTime = document.getElementById('responseTime');
+            const learningCycles = document.getElementById('learningCycles');
+            const taskCount = document.getElementById('taskCount');
+            
+            // Stats variables
+            let totalMessages = 0;
+            let totalResponseTime = 0;
+            let totalLearningCycles = 0;
+            
+            // Toggle sidebar
+            sidebarToggle.addEventListener('click', function() {
+                sidebar.style.display = sidebar.style.display === 'block' ? 'none' : 'block';
+                
+                // Load data when sidebar is opened
+                if (sidebar.style.display === 'block') {
+                    loadTasks();
+                    loadAgentInfo();
+                }
+            });
+            
+            sidebarClose.addEventListener('click', function() {
+                sidebar.style.display = 'none';
+            });
+            
+            // Function to add a message to the chat
+            function addMessage(text, isUser = false) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `message ${isUser ? 'user-message' : 'agent-message'}`;
+                
+                const senderDiv = document.createElement('div');
+                senderDiv.className = 'message-sender';
+                senderDiv.textContent = isUser ? userName.value : 'AI Agent';
+                
+                const contentDiv = document.createElement('div');
+                contentDiv.className = 'message-content';
+                contentDiv.textContent = text;
+                
+                const timeDiv = document.createElement('div');
+                timeDiv.className = 'message-time';
+                const now = new Date();
+                timeDiv.textContent = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+                
+                messageDiv.appendChild(senderDiv);
+                messageDiv.appendChild(contentDiv);
+                messageDiv.appendChild(timeDiv);
+                
+                chatMessages.appendChild(messageDiv);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+            
+            // Function to add a system message to the chat
+            function addSystemMessage(text) {
+                const systemMessage = document.createElement('div');
+                systemMessage.className = 'system-message';
+                systemMessage.textContent = text;
+                chatMessages.appendChild(systemMessage);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+            
+            // Function to show typing indicator
+            function showTypingIndicator() {
+                typingIndicator.style.display = 'block';
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+            
+            // Function to hide typing indicator
+            function hideTypingIndicator() {
+                typingIndicator.style.display = 'none';
+            }
+            
+            // Function to send a message to the server
+            async function sendMessage() {
+                const message = userInput.value.trim();
+                if (!message) return;
+                
+                // Add user message to chat
+                addMessage(message, true);
+                userInput.value = '';
+                
+                // Show typing indicator
+                showTypingIndicator();
+                
+                // Update stats
+                totalMessages++;
+                messageCount.textContent = totalMessages;
+                
+                // Record start time for response time calculation
+                const startTime = Date.now();
+                
+                try {
+                    // Send message to server
+                    const response = await fetch('/api/chat', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            message: message,
+                            user_name: userName.value
+                        })
+                    });
+                    
+                    // Calculate response time
+                    const endTime = Date.now();
+                    const thisResponseTime = endTime - startTime;
+                    totalResponseTime += thisResponseTime;
+                    responseTime.textContent = Math.round(totalResponseTime / totalMessages) + ' ms';
+                    
+                    // Hide typing indicator
+                    hideTypingIndicator();
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        // Add agent response to chat
+                        addMessage(data.response);
+                        
+                        // Refresh tasks if the sidebar is open
+                        if (sidebar.style.display === 'block') {
+                            loadTasks();
+                        }
+                    } else {
+                        // Add error message to chat
+                        const errorData = await response.json();
+                        addMessage(`Error: ${errorData.error || 'Unknown error'}`);
+                    }
+                } catch (error) {
+                    // Hide typing indicator
+                    hideTypingIndicator();
+                    
+                    // Add error message to chat
+                    addMessage(`Error: ${error.message}`);
+                }
+            }
+            
+            // Function to load tasks
+            async function loadTasks() {
+                try {
+                    const response = await fetch('/api/tasks');
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        
+                        // Update task count
+                        taskCount.textContent = data.pending + data.in_progress;
+                        
+                        // Clear tasks list
+                        tasksList.innerHTML = '';
+                        
+                        if (data.total === 0) {
+                            tasksList.innerHTML = '<p class="text-muted">No tasks available</p>';
+                            return;
+                        }
+                        
+                        // Add tasks to list
+                        data.tasks.forEach(task => {
+                            const taskDiv = document.createElement('div');
+                            taskDiv.className = 'task-item';
+                            
+                            // Set background color based on status
+                            if (task.status === 'COMPLETED') {
+                                taskDiv.style.backgroundColor = '#e8f5e9';
+                            } else if (task.status === 'FAILED') {
+                                taskDiv.style.backgroundColor = '#ffebee';
+                            } else if (task.status === 'IN_PROGRESS') {
+                                taskDiv.style.backgroundColor = '#e3f2fd';
+                            }
+                            
+                            const taskHeader = document.createElement('div');
+                            taskHeader.className = 'd-flex justify-content-between align-items-center';
+                            
+                            const taskTitle = document.createElement('h5');
+                            taskTitle.textContent = task.name;
+                            
+                            const taskBadge = document.createElement('span');
+                            taskBadge.className = `badge ${getBadgeClass(task.status)}`;
+                            taskBadge.textContent = task.status;
+                            
+                            taskHeader.appendChild(taskTitle);
+                            taskHeader.appendChild(taskBadge);
+                            
+                            const taskInfo = document.createElement('p');
+                            taskInfo.innerHTML = `
+                                <small>ID: ${task.task_id.substring(0, 8)}...</small><br>
+                                <small>Priority: ${task.priority}</small><br>
+                                <small>Created: ${new Date(task.created_at).toLocaleString()}</small>
+                            `;
+                            
+                            const progressBar = document.createElement('div');
+                            progressBar.className = 'progress';
+                            progressBar.innerHTML = `
+                                <div class="progress-bar ${getProgressBarClass(task.status)}" 
+                                     role="progressbar" 
+                                     style="width: ${task.progress * 100}%" 
+                                     aria-valuenow="${task.progress * 100}" 
+                                     aria-valuemin="0" 
+                                     aria-valuemax="100"></div>
+                            `;
+                            
+                            const taskActions = document.createElement('div');
+                            taskActions.className = 'task-actions';
+                            
+                            const viewButton = document.createElement('button');
+                            viewButton.className = 'btn btn-sm btn-outline-primary';
+                            viewButton.textContent = 'View';
+                            viewButton.addEventListener('click', () => viewTask(task.task_id));
+                            
+                            const cancelButton = document.createElement('button');
+                            cancelButton.className = 'btn btn-sm btn-outline-danger';
+                            cancelButton.textContent = 'Cancel';
+                            cancelButton.disabled = task.status !== 'PENDING' && task.status !== 'IN_PROGRESS';
+                            cancelButton.addEventListener('click', () => cancelTask(task.task_id));
+                            
+                            taskActions.appendChild(viewButton);
+                            taskActions.appendChild(cancelButton);
+                            
+                            taskDiv.appendChild(taskHeader);
+                            taskDiv.appendChild(taskInfo);
+                            taskDiv.appendChild(progressBar);
+                            taskDiv.appendChild(taskActions);
+                            
+                            tasksList.appendChild(taskDiv);
+                        });
+                    } else {
+                        tasksList.innerHTML = '<p class="text-danger">Failed to load tasks</p>';
+                    }
+                } catch (error) {
+                    tasksList.innerHTML = `<p class="text-danger">Error: ${error.message}</p>`;
+                }
+            }
+            
+            // Function to get badge class based on task status
+            function getBadgeClass(status) {
+                switch (status) {
+                    case 'PENDING':
+                        return 'bg-secondary';
+                    case 'IN_PROGRESS':
+                        return 'bg-primary';
+                    case 'COMPLETED':
+                        return 'bg-success';
+                    case 'FAILED':
+                        return 'bg-danger';
+                    case 'CANCELLED':
+                        return 'bg-warning';
+                    default:
+                        return 'bg-secondary';
+                }
+            }
+            
+            // Function to get progress bar class based on task status
+            function getProgressBarClass(status) {
+                switch (status) {
+                    case 'PENDING':
+                        return 'bg-secondary';
+                    case 'IN_PROGRESS':
+                        return 'bg-primary';
+                    case 'COMPLETED':
+                        return 'bg-success';
+                    case 'FAILED':
+                        return 'bg-danger';
+                    case 'CANCELLED':
+                        return 'bg-warning';
+                    default:
+                        return 'bg-secondary';
+                }
+            }
+            
+            // Function to view task details
+            async function viewTask(taskId) {
+                try {
+                    const response = await fetch(`/api/tasks/${taskId}`);
+                    
+                    if (response.ok) {
+                        const task = await response.json();
+                        
+                        // Create a modal to display task details
+                        const modalHtml = `
+                            <div class="modal fade" id="taskModal" tabindex="-1" aria-labelledby="taskModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="taskModalLabel">Task Details</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <h5>${task.name}</h5>
+                                            <span class="badge ${getBadgeClass(task.status)}">${task.status}</span>
+                                            <p class="mt-2"><strong>ID:</strong> ${task.task_id}</p>
+                                            <p><strong>Progress:</strong> ${Math.round(task.progress * 100)}%</p>
+                                            <div class="progress mb-3">
+                                                <div class="progress-bar ${getProgressBarClass(task.status)}" 
+                                                     role="progressbar" 
+                                                     style="width: ${task.progress * 100}%" 
+                                                     aria-valuenow="${task.progress * 100}" 
+                                                     aria-valuemin="0" 
+                                                     aria-valuemax="100"></div>
+                                            </div>
+                                            <p><strong>Created:</strong> ${new Date(task.created_at).toLocaleString()}</p>
+                                            ${task.started_at ? `<p><strong>Started:</strong> ${new Date(task.started_at).toLocaleString()}</p>` : ''}
+                                            ${task.completed_at ? `<p><strong>Completed:</strong> ${new Date(task.completed_at).toLocaleString()}</p>` : ''}
+                                            ${task.result ? `<p><strong>Result:</strong> ${JSON.stringify(task.result)}</p>` : ''}
+                                            ${task.error ? `<p class="text-danger"><strong>Error:</strong> ${task.error}</p>` : ''}
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                            ${task.status === 'PENDING' || task.status === 'IN_PROGRESS' ? 
+                                                `<button type="button" class="btn btn-danger" id="cancelTaskBtn">Cancel Task</button>` : ''}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                        
+                        // Add modal to the document
+                        const modalContainer = document.createElement('div');
+                        modalContainer.innerHTML = modalHtml;
+                        document.body.appendChild(modalContainer);
+                        
+                        // Initialize the modal
+                        const taskModal = new bootstrap.Modal(document.getElementById('taskModal'));
+                        taskModal.show();
+                        
+                        // Add event listener to cancel button
+                        const cancelTaskBtn = document.getElementById('cancelTaskBtn');
+                        if (cancelTaskBtn) {
+                            cancelTaskBtn.addEventListener('click', () => {
+                                cancelTask(task.task_id);
+                                taskModal.hide();
+                            });
+                        }
+                        
+                        // Remove modal from DOM when hidden
+                        document.getElementById('taskModal').addEventListener('hidden.bs.modal', function () {
+                            document.body.removeChild(modalContainer);
+                        });
+                    } else {
+                        alert('Failed to load task details');
+                    }
+                } catch (error) {
+                    alert(`Error: ${error.message}`);
+                }
+            }
+            
+            // Function to cancel a task
+            async function cancelTask(taskId) {
+                if (!confirm('Are you sure you want to cancel this task?')) {
+                    return;
+                }
+                
+                try {
+                    const response = await fetch(`/api/tasks/${taskId}`, {
+                        method: 'DELETE'
+                    });
+                    
+                    if (response.ok) {
+                        // Reload tasks
+                        loadTasks();
+                        addSystemMessage(`Task ${taskId.substring(0, 8)}... has been cancelled.`);
+                    } else {
+                        const errorData = await response.json();
+                        alert(`Failed to cancel task: ${errorData.error || 'Unknown error'}`);
+                    }
+                } catch (error) {
+                    alert(`Error: ${error.message}`);
+                }
+            }
+            
+            // Function to create a new task
+            async function createTask(event) {
+                event.preventDefault();
+                
+                const name = document.getElementById('taskName').value;
+                const description = document.getElementById('taskDescription').value;
+                const action = document.getElementById('taskAction').value;
+                const priority = document.getElementById('taskPriority').value;
+                
+                // Prepare params based on action
+                let params = {};
+                
+                switch (action) {
+                    case 'learn_information':
+                        params = { text: description };
+                        break;
+                    case 'search_knowledge':
+                        params = { query: description };
+                        break;
+                    case 'analyze_sentiment':
+                        params = { text: description };
+                        break;
+                    case 'send_message':
+                        // Extract recipient from description (simple implementation)
+                        const recipientMatch = description.match(/to\s+([^:]+):/i);
+                        const recipient = recipientMatch ? recipientMatch[1].trim() : 'user';
+                        const message = description;
+                        params = { recipient, message };
+                        break;
+                    case 'schedule_reminder':
+                        // Simple implementation - assumes description contains the reminder text
+                        params = { 
+                            message: description,
+                            time: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString() // 24 hours from now
+                        };
+                        break;
+                }
+                
+                try {
+                    const response = await fetch('/api/tasks', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            name,
+                            description,
+                            action,
+                            params,
+                            priority
+                        })
+                    });
+                    
+                    if (response.ok) {
+                        const result = await response.json();
+                        
+                        // Reset form
+                        document.getElementById('taskName').value = '';
+                        document.getElementById('taskDescription').value = '';
+                        document.getElementById('taskAction').value = '';
+                        
+                        // Reload tasks
+                        loadTasks();
+                        
+                        // Add system message
+                        addSystemMessage(`Task "${name}" created with ID ${result.task_id.substring(0, 8)}...`);
+                    } else {
+                        const errorData = await response.json();
+                        alert(`Failed to create task: ${errorData.error || 'Unknown error'}`);
+                    }
+                } catch (error) {
+                    alert(`Error: ${error.message}`);
+                }
+            }
+            
+            // Function to search knowledge
+            async function searchKnowledge(event) {
+                event.preventDefault();
+                
+                const query = document.getElementById('searchQuery').value;
+                
+                try {
+                    const response = await fetch(`/api/knowledge/search?q=${encodeURIComponent(query)}`);
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        
+                        // Clear results
+                        knowledgeResults.innerHTML = '';
+                        
+                        if (data.count === 0) {
+                            knowledgeResults.innerHTML = '<p class="text-muted">No results found</p>';
+                            return;
+                        }
+                        
+                        // Add results
+                        const resultsHeader = document.createElement('p');
+                        resultsHeader.innerHTML = `<strong>Found ${data.count} results for "${query}":</strong>`;
+                        knowledgeResults.appendChild(resultsHeader);
+                        
+                        data.results.forEach(result => {
+                            const resultDiv = document.createElement('div');
+                            resultDiv.className = 'knowledge-item';
+                            
+                            const resultHeader = document.createElement('div');
+                            resultHeader.className = 'd-flex justify-content-between align-items-center';
+                            
+                            const resultTitle = document.createElement('h5');
+                            resultTitle.textContent = result.key;
+                            
+                            const resultBadge = document.createElement('span');
+                            resultBadge.className = 'badge bg-info';
+                            resultBadge.textContent = result.category;
+                            
+                            resultHeader.appendChild(resultTitle);
+                            resultHeader.appendChild(resultBadge);
+                            
+                            const resultValue = document.createElement('p');
+                            resultValue.textContent = typeof result.value === 'string' ? 
+                                result.value : JSON.stringify(result.value);
+                            
+                            resultDiv.appendChild(resultHeader);
+                            resultDiv.appendChild(resultValue);
+                            
+                            knowledgeResults.appendChild(resultDiv);
+                        });
+                    } else {
+                        const errorData = await response.json();
+                        knowledgeResults.innerHTML = `<p class="text-danger">Error: ${errorData.error || 'Unknown error'}</p>`;
+                    }
+                } catch (error) {
+                    knowledgeResults.innerHTML = `<p class="text-danger">Error: ${error.message}</p>`;
+                }
+            }
+            
+            // Function to add knowledge
+            async function addKnowledge(event) {
+                event.preventDefault();
+                
+                const text = document.getElementById('knowledgeText').value;
+                const category = document.getElementById('knowledgeCategory').value;
+                
+                try {
+                    const response = await fetch('/api/knowledge/learn', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            text,
+                            category
+                        })
+                    });
+                    
+                    if (response.ok) {
+                        const result = await response.json();
+                        
+                        // Reset form
+                        document.getElementById('knowledgeText').value = '';
+                        
+                        // Show result
+                        knowledgeResults.innerHTML = '';
+                        
+                        const resultDiv = document.createElement('div');
+                        resultDiv.className = 'alert alert-success';
+                        resultDiv.textContent = result.message;
+                        
+                        knowledgeResults.appendChild(resultDiv);
+                        
+                        // Add system message
+                        addSystemMessage(`Added new knowledge: ${result.message}`);
+                    } else {
+                        const errorData = await response.json();
+                        knowledgeResults.innerHTML = `<p class="text-danger">Error: ${errorData.error || 'Unknown error'}</p>`;
+                    }
+                } catch (error) {
+                    knowledgeResults.innerHTML = `<p class="text-danger">Error: ${error.message}</p>`;
+                }
+            }
+            
+            // Function to load agent info
+            async function loadAgentInfo() {
+                try {
+                    const response = await fetch('/api/agent/status');
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        
+                        // Update agent info
+                        agentInfo.innerHTML = `
+                            <p><strong>Name:</strong> ${data.name}</p>
+                            <p><strong>Age:</strong> ${data.age_days} days, ${data.age_hours} hours</p>
+                            <p><strong>Conversations:</strong> ${data.conversation_count}</p>
+                            <p><strong>Tasks:</strong> ${data.task_counts.total} total (${data.task_counts.pending} pending, 
+                                ${data.task_counts.in_progress} in progress, ${data.task_counts.completed} completed, 
+                                ${data.task_counts.failed} failed)</p>
+                        `;
+                        
+                        // Update capabilities list
+                        capabilitiesList.innerHTML = '';
+                        data.capabilities.forEach(capability => {
+                            const li = document.createElement('li');
+                            li.innerHTML = `<i class="bi bi-check-circle-fill"></i> ${capability}`;
+                            capabilitiesList.appendChild(li);
+                        });
+                    } else {
+                        agentInfo.innerHTML = '<p class="text-danger">Failed to load agent information</p>';
+                    }
+                } catch (error) {
+                    agentInfo.innerHTML = `<p class="text-danger">Error: ${error.message}</p>`;
+                }
+            }
+            
+            // Function to get a random fact
+            async function getRandomFact() {
+                try {
+                    const response = await fetch('/api/knowledge/fact');
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        addMessage(data.fact);
+                    } else {
+                        const errorData = await response.json();
+                        addMessage(`Error getting fact: ${errorData.error || 'Unknown error'}`);
+                    }
+                } catch (error) {
+                    addMessage(`Error: ${error.message}`);
+                }
+            }
+            
+            // Event listeners
+            sendButton.addEventListener('click', sendMessage);
+            
+            userInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    sendMessage();
+                }
+            });
+            
+            learnButton.addEventListener('click', async function() {
+                try {
+                    const response = await fetch('/api/learn', {
+                        method: 'POST'
+                    });
+                    
+                    if (response.ok) {
+                        // Add system message to chat
+                        addSystemMessage('Learning process triggered successfully.');
+                        
+                        // Update stats
+                        totalLearningCycles++;
+                        learningCycles.textContent = totalLearningCycles;
+                    } else {
+                        // Add error message to chat
+                        const errorData = await response.json();
+                        addSystemMessage(`Error triggering learning: ${errorData.error || 'Unknown error'}`);
+                    }
+                } catch (error) {
+                    // Add error message to chat
+                    addSystemMessage(`Error triggering learning: ${error.message}`);
+                }
+            });
+            
+            factButton.addEventListener('click', getRandomFact);
+            
+            resetButton.addEventListener('click', async function() {
+                if (confirm('Are you sure you want to reset the agent? This will clear all its learned data.')) {
+                    try {
+                        const response = await fetch('/api/reset', {
+                            method: 'POST'
+                        });
+                        
+                        if (response.ok) {
+                            // Clear chat messages
+                            chatMessages.innerHTML = '';
+                            
+                            // Add welcome message
+                            addSystemMessage('Agent has been reset. Welcome to the Ultra High-Tech Autonomous AI Agent. How can I assist you today?');
+                            
+                            // Reset stats
+                            totalMessages = 0;
+                            totalResponseTime = 0;
+                            totalLearningCycles = 0;
+                            messageCount.textContent = totalMessages;
+                            responseTime.textContent = '0 ms';
+                            learningCycles.textContent = totalLearningCycles;
+                            taskCount.textContent = '0';
+                            
+                            // Reload tasks if sidebar is open
+                            if (sidebar.style.display === 'block') {
+                                loadTasks();
+                                loadAgentInfo();
+                            }
+                        } else {
+                            // Add error message to chat
+                            const errorData = await response.json();
+                            addSystemMessage(`Error resetting agent: ${errorData.error || 'Unknown error'}`);
+                        }
+                    } catch (error) {
+                        // Add error message to chat
+                        addSystemMessage(`Error resetting agent: ${error.message}`);
+                    }
+                }
+            });
+            
+            // Form submissions
+            createTaskForm.addEventListener('submit', createTask);
+            searchKnowledgeForm.addEventListener('submit', searchKnowledge);
+            addKnowledgeForm.addEventListener('submit', addKnowledge);
+        });
+    </script>
+</body>
+</html>
